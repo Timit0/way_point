@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dliferlqx2c5q"
-path="res://.godot/imported/icon_3d.svg-3eeddca1233d793fc585192157edd6f1.ctex"
+path="res://.godot/imported/icon_3d.svg-a76f1fc58f006a64cd874e062657407c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/way_point/src/assets/icon_3d.svg"
-dest_files=["res://.godot/imported/icon_3d.svg-3eeddca1233d793fc585192157edd6f1.ctex"]
+source_file="res://addons/way_point/src/common/assets/icon_3d.svg"
+dest_files=["res://.godot/imported/icon_3d.svg-a76f1fc58f006a64cd874e062657407c.ctex"]
 
 [params]
 
