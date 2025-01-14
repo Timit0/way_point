@@ -9,11 +9,16 @@ using System.Runtime.CompilerServices;
 [GlobalClass, Icon(Icon.WP3D_ICON_PATH)]
 public partial class WayPoint3D : Node3D
 {
-    [ExportGroup("Size")]
     [Export]
     public Vector3 Size { get; set; } = new Vector3(1, 1, 1);
 
     //Area
+    [ExportCategory("Area3D")]
+    [Export(PropertyHint.Layers3DPhysics)]
+    public uint Layer { get; set; }
+    [Export(PropertyHint.Layers3DPhysics)]
+    public uint Mask { get; set; }
+
     public Area3D Area { get; set; } = new Area3D();
     public CollisionShape3D CollisionShape { get; set; } = new CollisionShape3D();
     public BoxShape3D BoxShape { get; set; } = new BoxShape3D();
@@ -26,7 +31,6 @@ public partial class WayPoint3D : Node3D
 
     public override void _EnterTree()
     {
-        GD.Print("ON");
         if (Engine.IsEditorHint())
         {
             Area.Name = "Area3D";
