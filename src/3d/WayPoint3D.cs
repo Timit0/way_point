@@ -26,6 +26,7 @@ public partial class WayPoint3D : Node3D
 
     public override void _EnterTree()
     {
+        GD.Print("ON");
         if (Engine.IsEditorHint())
         {
             Area.Name = "Area3D";
@@ -41,10 +42,10 @@ public partial class WayPoint3D : Node3D
 
             CSharpScript areaScript = GD.Load<CSharpScript>(AREA3D_SCRIPT);
             Area.SetScript(areaScript);
-            Area.AddChild(CollisionShape);
-            this.AddChild(Area);
 
-            this.AddChild(MeshInstance);
+            AddChildIfNotExist(CollisionShape, Area);
+            AddChildIfNotExist(Area, this);
+            AddChildIfNotExist(MeshInstance, this);
         }
     }
 
@@ -63,6 +64,20 @@ public partial class WayPoint3D : Node3D
     {
         RemoveChildren();
         base._ExitTree();
+    }
+
+    public bool AddChildIfNotExist(Node nodeToAdd, Node nodeOwner)
+    {
+        foreach (Node node in nodeOwner.GetChildren())
+        {
+            if (node == nodeToAdd)
+            {
+                return false;
+            }
+        }
+
+        nodeOwner.AddChild(nodeToAdd);
+        return true;
     }
 
     protected void RemoveChildren()
