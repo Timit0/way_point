@@ -28,9 +28,9 @@ public partial class WayPoint3D : Node3D
     //Area
     [ExportCategory("Area3D")]
     [Export(PropertyHint.Layers3DPhysics)]
-    public uint Layer { get; set; } = new uint();
+    public uint Layer { get; set; } = 1;
     [Export(PropertyHint.Layers3DPhysics)]
-    public uint Mask { get; set; }
+    public uint Mask { get; set; } = 1;
 
     public DetectionZone3D Area { get; set; } = new DetectionZone3D();
     public CollisionShape3D CollisionShape { get; set; } = new CollisionShape3D();
@@ -44,20 +44,14 @@ public partial class WayPoint3D : Node3D
 
     public override void _EnterTree()
     {
-        if (Engine.IsEditorHint())
-        {
-            SetUpArea();
-            SetUpMeshInstance();
-        }
+        SetUpArea();
+        SetUpMeshInstance();
     }
 
     public override void _ExitTree()
     {
-        if(Engine.IsEditorHint())
-        {
-            RemoveChildrenOf(Area);
-            RemoveChildrenOf(this);
-        }
+        RemoveChildrenOf(Area);
+        RemoveChildrenOf(this);
         base._ExitTree();
     }
 
@@ -73,6 +67,9 @@ public partial class WayPoint3D : Node3D
     {
         this.AddChild(Area);
         Area.AddChild(CollisionShape);
+        Area.CollisionLayer = this.Layer;
+        Area.CollisionMask = this.Mask;
+
         CollisionShape.Shape = BoxShape;
         BoxShape.Size = this.Size;
     }
