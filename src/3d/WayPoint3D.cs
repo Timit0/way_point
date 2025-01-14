@@ -6,108 +6,70 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 [Tool]
+[GlobalClass, Icon(Icon.WP3D_ICON_PATH)]
 public partial class WayPoint3D : Node3D
 {
-    protected const string WP3D_TSCN_PATH = "res://addons/way_point/src/3d/WP3D.tscn";
+    [ExportGroup("Size")]
+    [Export]
+    public Vector3 Size { get; set; } = new Vector3(1, 1, 1);
 
-    public Dictionary<string, bool> Essentials { get; set; } = new Dictionary<string, bool>
-    {
-        {nameof(WP3D), false},
-    };
+    //Area
+    public Area3D Area { get; set; } = new Area3D();
+    public CollisionShape3D CollisionShape { get; set; } = new CollisionShape3D();
+    public BoxShape3D BoxShape { get; set; } = new BoxShape3D();
+    protected const string AREA3D_SCRIPT = "res://addons/way_point/src/3d/DetectionZone3D.cs";
 
-    public WP3D WP3DNode { get; set; }
+    //MeshInstance
+    public MeshInstance3D MeshInstance { get; set; } = new MeshInstance3D();
+    public BoxMesh BoxMeshNode { get; set; } = new BoxMesh();
+
 
     public override void _EnterTree()
     {
         if (Engine.IsEditorHint())
         {
-            WP3D wp3d = new WP3D();
-            UpdateEssentials();
-            if (EssentialsChildrenExist())
-            {
-                foreach (Node node in GetChildren())
-                {
-                    if (node is WP3D wp3dNode)
-                    {
-                        wp3d = wp3dNode;
-                    }
-                }
-                // SetUPChild(wp3d);
-                WP3DNode = wp3d;
-                return;
-            }
+            Area.Name = "Area3D";
+            this.BoxShape.Size = this.Size;
 
-            PluginSignals.Instance.QueueFreePluginNode += on_queue_free_plugin_node;
+            CollisionShape.Name = "Shape";
+            CollisionShape.Shape = BoxShape;
 
-            PackedScene pcked = ResourceLoader.Load<PackedScene>(WP3D_TSCN_PATH);
-            wp3d = pcked.Instantiate<WP3D>();
-            this.AddChild(wp3d);
-            SetUPChild(wp3d);
-            WP3DNode = wp3d;
+            BoxMeshNode.Size = this.Size;
+            MeshInstance.Name = "MeshInstance";
+            MeshInstance.Mesh = BoxMeshNode;
+
+
+            CSharpScript areaScript = GD.Load<CSharpScript>(AREA3D_SCRIPT);
+            Area.SetScript(areaScript);
+            Area.AddChild(CollisionShape);
+            this.AddChild(Area);
+
+            this.AddChild(MeshInstance);
         }
-        base._EnterTree();
     }
 
-
-    public override void _ExitTree()
+    public override void _Process(double delta)
     {
         if (Engine.IsEditorHint())
         {
-            PluginSignals.Instance.QueueFreePluginNode -= on_queue_free_plugin_node;
-
-            RemoveChildren();
-            WP3DNode = null;
-            PluginSignals.Instance.Emit_QueueFreePluginNode_Signal(this.Name);
+            this.BoxShape.Size = this.Size;
+            BoxMeshNode.Size = this.Size;
         }
+
+        base._Process(delta);
+    }
+
+    public override void _ExitTree()
+    {
+        RemoveChildren();
         base._ExitTree();
     }
 
-    private void on_queue_free_plugin_node(string WPOwnerToString)
+    protected void RemoveChildren()
     {
-        if (WPOwnerToString == this.ToString())
+        foreach (Node item in this.GetChildren())
         {
-            this.RemoveChildren();
-            this.QueueFree();
-        }
-    }
-
-    protected void UpdateEssentials()
-    {
-        foreach (Node node in GetChildren())
-        {
-            foreach (KeyValuePair<string, bool> item in Essentials)
-            {
-                if (item.Key == node.GetType().ToString())
-                {
-                    Essentials[node.GetType().ToString()] = true;
-                }
-            }
-        }
-    }
-
-    protected void SetUPChild(WP3D wp3d)
-    {
-        wp3d.Owner = GetTree().EditedSceneRoot;
-        wp3d.Model.WPOwner = this;
-    }
-
-    protected bool EssentialsChildrenExist()
-    {
-        foreach (KeyValuePair<string, bool> item in Essentials)
-        {
-            if (!item.Value)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void RemoveChildren()
-    {
-        foreach (Node node in GetChildren())
-        {
-            node.QueueFree();
+            this.RemoveChild(item);
         }
     }
 }
