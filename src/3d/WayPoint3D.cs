@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 [Tool]
-[GlobalClass, Icon(Icon.WP3D_ICON_PATH)]
+[GlobalClass, Icon(Icon.WAY_POINT_3D_ICON_PATH)]
 public partial class WayPoint3D : Node3D
 {
     protected Vector3 size {get;set;} = new Vector3(1,1,1);
@@ -46,6 +46,12 @@ public partial class WayPoint3D : Node3D
     {
         SetUpArea();
         SetUpMeshInstance();
+    }
+
+    public override void _Process(double delta)
+    {
+        
+        base._Process(delta);
     }
 
     public override void _ExitTree()

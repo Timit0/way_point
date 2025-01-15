@@ -7,7 +7,9 @@ public partial class DetectionZone3D : Area3D
     {
         foreach (Node node in GetOverlappingBodies())
         {
+            // #if DEBUG
             GD.Print(node.Name);
+            // #endif
         }
     }
 }
