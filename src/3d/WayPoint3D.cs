@@ -9,9 +9,9 @@ using System.Runtime.CompilerServices;
 [GlobalClass, Icon(Icon.WAY_POINT_3D_ICON_PATH)]
 public partial class WayPoint3D : Node3D
 {
-    protected Vector3 size {get;set;} = new Vector3(1,1,1);
+    protected Vector3 size { get; set; } = new Vector3(1, 1, 1);
     [Export]
-    public Vector3 Size 
+    public Vector3 Size
     {
         get
         {
@@ -50,7 +50,7 @@ public partial class WayPoint3D : Node3D
 
     public override void _Process(double delta)
     {
-        
+
         base._Process(delta);
     }
 
