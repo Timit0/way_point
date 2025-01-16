@@ -1,5 +1,6 @@
 #if TOOLS
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Godot;
 using Godot.Collections;
 
@@ -8,7 +9,8 @@ public partial class WP3DRoute : Node
 {
     [Export]
     public string RouteName { get; set; }
-
+    [Export]
+    public bool Loopable { get; set; } = false;
     [Export]
     public Array<WayPoint3D> WayPoints { get; set; } = new Array<WayPoint3D>();
     [Export]
@@ -24,14 +26,23 @@ public partial class WP3DRoute : Node
             }
         }
 
-        if (WayPoints.Count > 1)
+        if (VerifyIfWayPointsAreOkay(WayPoints))
         {
-            for (int i = 0; i < WayPoints.Count - 1; i++)
+            if (WayPoints.Count > 1)
             {
-                if (WayPoints[i] is not null && WayPoints[i + 1] is not null)
+                for (int i = 0; i < WayPoints.Count - 1; i++)
                 {
                     MeshInstance3D meshInstance = new MeshInstance3D();
                     DrawLine(WayPoints[i].GlobalPosition, WayPoints[i + 1].GlobalPosition, ColorOfLines, meshInstance);
+                }
+            }
+
+            if (WayPoints.Count > 1)
+            {
+                if (Loopable)
+                {
+                    MeshInstance3D meshInstance = new MeshInstance3D();
+                    DrawLine(WayPoints[0].GlobalPosition, WayPoints[WayPoints.Count - 1].GlobalPosition, ColorOfLines, meshInstance);
                 }
             }
         }
@@ -42,7 +53,8 @@ public partial class WP3DRoute : Node
         ImmediateMesh mesh = new ImmediateMesh();
         StandardMaterial3D standardMaterial = new StandardMaterial3D
         {
-            VertexColorUseAsAlbedo = true
+            VertexColorUseAsAlbedo = true,
+            // SubsurfScatterStrength = 12
         };
 
         mesh.SurfaceBegin(Mesh.PrimitiveType.LineStrip);
@@ -57,6 +69,18 @@ public partial class WP3DRoute : Node
         this.AddChild(meshInstance);
         meshInstance.Mesh = mesh;
         meshInstance.MaterialOverride = standardMaterial;
+    }
+
+    protected bool VerifyIfWayPointsAreOkay(Array<WayPoint3D> wayPoints)
+    {
+        for (int i = 0; i < wayPoints.Count - 1; i++)
+        {
+            if (wayPoints[i] is null || WayPoints[i + 1] is null || !WayPoints[i].IsInsideTree() || !WayPoints[i + 1].IsInsideTree())
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
 #endif
