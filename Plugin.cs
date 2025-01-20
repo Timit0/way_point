@@ -22,6 +22,19 @@ public partial class Plugin : EditorPlugin
         this.AddCustomType(WAY_POINT_3D_ROUTE_NAME, "Node", wp3dRouteScript, wp3dRouteIcon);
     }
 
+    public override void _Process(double delta)
+    {
+        WPSingleton.Instance.WP3DRouteAreEditorSelected.Clear();
+        foreach (Node node in EditorInterface.Singleton.GetSelection().GetSelectedNodes())
+        {
+            if(node is WP3DRoute wp3dRoute)
+            {
+                WPSingleton.Instance.WP3DRouteAreEditorSelected.Add(wp3dRoute);
+            }
+        }
+        base._Process(delta);
+    }
+
     public override void _ExitTree()
     {
         this.RemoveCustomType(WAY_POINT_3D_NAME);
