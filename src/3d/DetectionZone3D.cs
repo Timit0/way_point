@@ -3,7 +3,7 @@ using System;
 
 public partial class DetectionZone3D : Area3D
 {
-    protected WayPoint3D wp3dOwner {get;set;}
+    protected WayPoint3D wp3dOwner { get; set; }
 
     public override void _Ready()
     {
