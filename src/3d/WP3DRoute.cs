@@ -28,6 +28,9 @@ public partial class WP3DRoute : Node
     public float LabelPixelSize { get; set; } = 0.06f;
 
 
+    [Signal]
+    public delegate void LapCompletedEventHandler(WP3DRoute wp3dRoute, Node3D node);
+
     public Godot.Collections.Dictionary<string, Array<WayPoint3D>> LapHistory { get; set; } = new Godot.Collections.Dictionary<string, Array<WayPoint3D>>();
 
     public override void _Ready()
@@ -83,6 +86,7 @@ public partial class WP3DRoute : Node
         {
             return;
         }
+        this.Emit_LapCompleted_Signal(wp3dRoute, node);
         this.LapHistory[node.ToString()].Clear();
     }
 
@@ -108,6 +112,11 @@ public partial class WP3DRoute : Node
                 }
             }
         }
+    }
+
+    public void Emit_LapCompleted_Signal(WP3DRoute wp3dRoute, Node3D node)
+    {
+        this.EmitSignal(SignalName.LapCompleted, wp3dRoute, node);
     }
 
     public void DrawLine(Vector3 start, Vector3 end, Color color, MeshInstance3D meshInstance)
@@ -153,7 +162,7 @@ public partial class WP3DRoute : Node
                 }
             }
 
-            if (LapHistory[nodeEntered.ToString()].Count == wayPoints.Count)
+            if (LapHistory.ContainsKey(nodeEntered.ToString()) && LapHistory[nodeEntered.ToString()].Count == wayPoints.Count)
             {
                 WP3DRouteSignals.Instance.Emit_LapCompleted_Signal(this, nodeEntered);
             }
