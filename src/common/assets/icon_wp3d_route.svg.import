@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dliferlqx2c5q"
-path="res://.godot/imported/icon_3d.svg-3eeddca1233d793fc585192157edd6f1.ctex"
+uid="uid://bj744y7yrlqs3"
+path="res://.godot/imported/icon_wp3d_route.svg-eab38352c168da9172b3a237cfc0f2e6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/way_point/src/assets/icon_3d.svg"
-dest_files=["res://.godot/imported/icon_3d.svg-3eeddca1233d793fc585192157edd6f1.ctex"]
+source_file="res://addons/way_point/src/common/assets/icon_wp3d_route.svg"
+dest_files=["res://.godot/imported/icon_wp3d_route.svg-eab38352c168da9172b3a237cfc0f2e6.ctex"]
 
 [params]
 
