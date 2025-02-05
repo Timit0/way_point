@@ -11,13 +11,15 @@ public partial class WP3DRoute : Node
     [Export]
     public string RouteName { get; set; }
     [Export]
-    public bool Loopable { get; set; } = false;
-    [Export]
     public bool NeedToBeReachedInOrder { get; set; } = true;
     [Export]
     public Array<WayPoint3D> WayPoints { get; set; } = new Array<WayPoint3D>();
 
     [ExportGroup("Debug")]
+    [Export]
+    public bool Loopable { get; set; } = false;
+    [Export]
+    protected bool DrawLineInRuntime {get;set;} = false;
     [Export]
     public Color ColorOfLines { get; set; } = new Color(0.9922f, 0.2392f, 0.7098f, 1);
     [Export]
@@ -25,6 +27,9 @@ public partial class WP3DRoute : Node
     [Export]
     public float LabelPixelSize { get; set; } = 0.06f;
 
+
+    [Signal]
+    public delegate void LapCompletedEventHandler(WP3DRoute wp3dRoute, Node3D node);
 
     public Godot.Collections.Dictionary<string, Array<WayPoint3D>> LapHistory { get; set; } = new Godot.Collections.Dictionary<string, Array<WayPoint3D>>();
 
@@ -40,19 +45,22 @@ public partial class WP3DRoute : Node
 
     public override void _Process(double delta)
     {
-        foreach (Node node in GetChildren())
+        if(Engine.IsEditorHint() || DrawLineInRuntime)
         {
-            if (node is MeshInstance3D wp3d)
+            foreach (Node node in GetChildren())
             {
-                this.RemoveChild(wp3d);
+                if (node is MeshInstance3D wp3d)
+                {
+                    this.RemoveChild(wp3d);
+                }
             }
-        }
 
-        DrawLinkedLines(this.WayPoints, this.ColorOfLines);
+            DrawLinkedLines(this.WayPoints, this.ColorOfLines);
 
-        if (Engine.IsEditorHint())
-        {
-            UpdateLabels(WPSingleton.Instance.WP3DRouteAreEditorSelected, this.WayPoints, this.ShowLabel, this.LabelPixelSize);
+            if (Engine.IsEditorHint())
+            {
+                UpdateLabels(WPSingleton.Instance.WP3DRouteAreEditorSelected, this.WayPoints, this.ShowLabel, this.LabelPixelSize);
+            }
         }
     }
 
@@ -78,6 +86,7 @@ public partial class WP3DRoute : Node
         {
             return;
         }
+        this.Emit_LapCompleted_Signal(wp3dRoute, node);
         this.LapHistory[node.ToString()].Clear();
     }
 
@@ -103,6 +112,11 @@ public partial class WP3DRoute : Node
                 }
             }
         }
+    }
+
+    public void Emit_LapCompleted_Signal(WP3DRoute wp3dRoute, Node3D node)
+    {
+        this.EmitSignal(SignalName.LapCompleted, wp3dRoute, node);
     }
 
     public void DrawLine(Vector3 start, Vector3 end, Color color, MeshInstance3D meshInstance)
@@ -148,7 +162,7 @@ public partial class WP3DRoute : Node
                 }
             }
 
-            if (LapHistory[nodeEntered.ToString()].Count == wayPoints.Count)
+            if (LapHistory.ContainsKey(nodeEntered.ToString()) && LapHistory[nodeEntered.ToString()].Count == wayPoints.Count)
             {
                 WP3DRouteSignals.Instance.Emit_LapCompleted_Signal(this, nodeEntered);
             }
