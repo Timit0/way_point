@@ -11,13 +11,15 @@ public partial class WP3DRoute : Node
     [Export]
     public string RouteName { get; set; }
     [Export]
-    public bool Loopable { get; set; } = false;
-    [Export]
     public bool NeedToBeReachedInOrder { get; set; } = true;
     [Export]
     public Array<WayPoint3D> WayPoints { get; set; } = new Array<WayPoint3D>();
 
     [ExportGroup("Debug")]
+    [Export]
+    public bool Loopable { get; set; } = false;
+    [Export]
+    protected bool DrawLineInRuntime {get;set;} = false;
     [Export]
     public Color ColorOfLines { get; set; } = new Color(0.9922f, 0.2392f, 0.7098f, 1);
     [Export]
@@ -40,19 +42,22 @@ public partial class WP3DRoute : Node
 
     public override void _Process(double delta)
     {
-        foreach (Node node in GetChildren())
+        if(Engine.IsEditorHint() || DrawLineInRuntime)
         {
-            if (node is MeshInstance3D wp3d)
+            foreach (Node node in GetChildren())
             {
-                this.RemoveChild(wp3d);
+                if (node is MeshInstance3D wp3d)
+                {
+                    this.RemoveChild(wp3d);
+                }
             }
-        }
 
-        DrawLinkedLines(this.WayPoints, this.ColorOfLines);
+            DrawLinkedLines(this.WayPoints, this.ColorOfLines);
 
-        if (Engine.IsEditorHint())
-        {
-            UpdateLabels(WPSingleton.Instance.WP3DRouteAreEditorSelected, this.WayPoints, this.ShowLabel, this.LabelPixelSize);
+            if (Engine.IsEditorHint())
+            {
+                UpdateLabels(WPSingleton.Instance.WP3DRouteAreEditorSelected, this.WayPoints, this.ShowLabel, this.LabelPixelSize);
+            }
         }
     }
 
