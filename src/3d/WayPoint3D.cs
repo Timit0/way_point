@@ -6,12 +6,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 [Tool]
-[GlobalClass, Icon(Icon.WP3D_ICON_PATH)]
+[GlobalClass, Icon(Icon.WAY_POINT_3D_ICON_PATH)]
 public partial class WayPoint3D : Node3D
 {
-    protected Vector3 size {get;set;} = new Vector3(1,1,1);
+    protected Vector3 size { get; set; } = new Vector3(1, 1, 1);
     [Export]
-    public Vector3 Size 
+    public Vector3 Size
     {
         get
         {
@@ -28,9 +28,9 @@ public partial class WayPoint3D : Node3D
     //Area
     [ExportCategory("Area3D")]
     [Export(PropertyHint.Layers3DPhysics)]
-    public uint Layer { get; set; } = new uint();
+    public uint Layer { get; set; } = 1;
     [Export(PropertyHint.Layers3DPhysics)]
-    public uint Mask { get; set; }
+    public uint Mask { get; set; } = 1;
 
     public DetectionZone3D Area { get; set; } = new DetectionZone3D();
     public CollisionShape3D CollisionShape { get; set; } = new CollisionShape3D();
@@ -41,23 +41,34 @@ public partial class WayPoint3D : Node3D
     public MeshInstance3D MeshInstance { get; set; } = new MeshInstance3D();
     public BoxMesh BoxMeshNode { get; set; } = new BoxMesh();
 
+    //Labels
+    public Label3D Label3DNumber {get;set;} = new Label3D();
+    public bool LabelCanBeSet {get;set;} = true;
+
 
     public override void _EnterTree()
     {
-        if (Engine.IsEditorHint())
+        SetUpArea();
+        if(Engine.IsEditorHint())
         {
-            SetUpArea();
             SetUpMeshInstance();
+            SetUpLabels();
         }
+    }
+
+    public override void _Process(double delta)
+    {
+        if(Engine.IsEditorHint())
+        {
+            Label3DNumber.Text = "";
+        }
+        base._Process(delta);
     }
 
     public override void _ExitTree()
     {
-        if(Engine.IsEditorHint())
-        {
-            RemoveChildrenOf(Area);
-            RemoveChildrenOf(this);
-        }
+        RemoveChildrenOf(Area);
+        RemoveChildrenOf(this);
         base._ExitTree();
     }
 
@@ -73,6 +84,9 @@ public partial class WayPoint3D : Node3D
     {
         this.AddChild(Area);
         Area.AddChild(CollisionShape);
+        Area.CollisionLayer = this.Layer;
+        Area.CollisionMask = this.Mask;
+
         CollisionShape.Shape = BoxShape;
         BoxShape.Size = this.Size;
     }
@@ -82,6 +96,15 @@ public partial class WayPoint3D : Node3D
         this.AddChild(MeshInstance);
         MeshInstance.Mesh = BoxMeshNode;
         BoxMeshNode.Size = this.Size;
+    }
+
+    public void SetUpLabels()
+    {
+        this.AddChild(Label3DNumber);
+        Label3DNumber.Billboard = BaseMaterial3D.BillboardModeEnum.Enabled;
+        Label3DNumber.NoDepthTest = true;
+        Label3DNumber.TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest;
+        Label3DNumber.PixelSize = 0.06f;
     }
 }
 #endif

@@ -1,23 +1,26 @@
-#if TOOLS
 using Godot;
 using System;
 
-[Tool]
 public partial class DetectionZone3D : Area3D
 {
-    // Called when the node enters the scene tree for the first time.
+    protected WayPoint3D wp3dOwner { get; set; }
+
     public override void _Ready()
     {
+        this.BodyEntered += on_body_entered;
+        this.BodyExited += on_body_exited;
+
+        wp3dOwner = GetParent() as WayPoint3D;
+        base._Ready();
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
+    private void on_body_entered(Node3D body)
     {
-        // foreach (Node node in GetOverlappingBodies())
-        // {
-        //     GD.Print(node.Name);
-        // }
-        GD.Print("A");
+        WP3DSignals.Instance.Emit_BodyEntered_Signal(wp3dOwner, body);
+    }
+
+    private void on_body_exited(Node3D body)
+    {
+        WP3DSignals.Instance.Emit_BodyExited_Signal(wp3dOwner, body);
     }
 }
-#endif
