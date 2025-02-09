@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://djshse5xunbr7"
-path="res://.godot/imported/icon_wp3d.svg-e810847b5d1819170f81f5d752dd6b3f.ctex"
+path="res://.godot/imported/icon_wp3d.svg-a5ed4314df6b7974ac839147f878d2ae.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/way_point/src/common/assets/icon_wp3d.svg"
-dest_files=["res://.godot/imported/icon_wp3d.svg-e810847b5d1819170f81f5d752dd6b3f.ctex"]
+source_file="res://addons/way_point/addons/way_point/src/common/assets/icon_wp3d.svg"
+dest_files=["res://.godot/imported/icon_wp3d.svg-a5ed4314df6b7974ac839147f878d2ae.ctex"]
 
 [params]
 
